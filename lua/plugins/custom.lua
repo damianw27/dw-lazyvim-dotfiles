@@ -85,9 +85,12 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
-      require("monokai").setup({
-        palette = require("monokai").soda,
+      local monokai = require("monokai")
+
+      monokai.setup({
+        palette = monokai.soda,
       })
+
       vim.cmd.colorscheme("monokai")
     end,
   },
