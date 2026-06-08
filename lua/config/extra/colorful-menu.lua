@@ -1,14 +1,25 @@
-require("cmp").setup({
-  formatting = {
-    format = function(entry, vim_item)
-      local highlights_info = require("colorful-menu").cmp_highlights(entry)
+local M = {}
 
-      if highlights_info ~= nil then
-        vim_item.abbr_hl_group = highlights_info.highlights
-        vim_item.abbr = highlights_info.text
-      end
+function M.init()
+  require("blink.cmp").setup({
+    completion = {
+      menu = {
+        draw = {
+          columns = { { "kind_icon" }, { "label", gap = 1 } },
+          components = {
+            label = {
+              text = function(ctx)
+                return require("colorful-menu").blink_components_text(ctx)
+              end,
+              highlight = function(ctx)
+                return require("colorful-menu").blink_components_highlight(ctx)
+              end,
+            },
+          },
+        },
+      },
+    },
+  })
+end
 
-      return vim_item
-    end,
-  },
-})
+return M

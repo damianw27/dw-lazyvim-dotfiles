@@ -85,12 +85,9 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
-      local monokai = require("monokai")
-
-      monokai.setup({
-        palette = monokai.soda,
+      require("monokai").setup({
+        palette = require("monokai").soda,
       })
-
       vim.cmd.colorscheme("monokai")
     end,
   },
@@ -118,4 +115,12 @@ return {
   { "mbbill/undotree" },
   { "nvim-java/nvim-java" },
   { "xzbdmw/colorful-menu.nvim" },
+  {
+    "saghen/blink.cmp",
+    opts = {
+      fuzzy = {
+        implementation = "lua",
+      },
+    },
+  },
 }

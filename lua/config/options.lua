@@ -13,3 +13,5 @@ vim.cmd([[highlight ColorColumn ctermbg=lightgrey guibg=lightgrey]])
 
 vim.opt.number = true
 vim.opt.relativenumber = false
+
+vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/site")

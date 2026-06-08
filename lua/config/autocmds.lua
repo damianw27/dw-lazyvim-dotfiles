@@ -9,4 +9,6 @@
 
 require("config.automation.buf_manager").register()
 
-require("config.extra.colorful-menu")
+require("config.extra.colorful-menu").init()
+
+require("config.extra.tree-sitter").init()
