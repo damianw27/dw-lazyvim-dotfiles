@@ -2,6 +2,70 @@
 
 Personal Neovim setup built on LazyVim.
 
+## Required binaries
+
+Install these to match current config:
+
+Arch Linux:
+
+```sh
+sudo pacman -Syy --needed git ripgrep fd fzf wl-clipboard maven clang lua-language-server typescript-language-server zig eslint_d luacheck curl unzip tar gzip bash
+```
+
+Windows:
+
+```powershell
+$packages = @(
+  "Git.Git"
+  "BurntSushi.Ripgrep.MSVC"
+  "sharkdp.fd"
+  "junegunn.fzf"
+  "Microsoft.PowerShell"
+  "Apache.Maven"
+  "LLVM.LLVM"
+  "Zig.Zig"
+  "LuaLS.LuaLanguageServer"
+  "7zip.7zip"
+)
+
+foreach ($package in $packages) {
+  winget install --id $package -e
+}
+```
+
+Install Node with `nvm`:
+
+> On Windows 11, do this inside WSL.
+
+```sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh | bash
+source "$HOME/.nvm/nvm.sh"
+nvm install --lts
+```
+
+Install Java with `sdkman`:
+
+> `sdkman` is WSL / UNIX only. Use it inside WSL on Windows 11.
+
+```sh
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install java
+```
+
+Then install script-based tools:
+
+```sh
+corepack enable
+pnpm add -g typescript-language-server eslint_d
+luarocks install --local luacheck
+```
+
+Optional but useful:
+
+- `delta` if you want colored terminal diffs with Git
+- `win32yank.exe` on WSL when you want Windows clipboard bridging without OSC52
+
 ## `buf_manager` behavior
 
 - Tracks last-viewed time per listed, normal file buffer.
