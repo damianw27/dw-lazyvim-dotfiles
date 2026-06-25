@@ -6,3 +6,14 @@ debug
 foo.*
 *.log
 data
+
+# AI agent artifacts
+.agents/
+.codex/
+.claude/
+.claudecc/
+.cursor/
+AGENTS.md
+CLAUDE.md
+.github/copilot-instructions.md
+.github/prompts/

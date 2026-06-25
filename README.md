@@ -4,15 +4,44 @@ Personal Neovim setup built on LazyVim.
 
 ## Required binaries
 
-Install these to match current config:
+Install these to match current config.
 
-Arch Linux:
+### Arch Linux
 
 ```sh
-sudo pacman -Syy --needed git ripgrep fd fzf wl-clipboard maven clang lua-language-server typescript-language-server zig eslint_d luacheck curl unzip tar gzip bash
+sudo pacman -Syy --needed git ripgrep fd fzf wl-clipboard maven clang cmake dotnet-sdk lua-language-server zig eslint_d luacheck curl unzip tar gzip bash
 ```
 
-Windows:
+Install Node tools:
+
+```sh
+sudo pacman -Syy --needed nodejs npm
+sudo npm install -g corepack
+corepack enable
+pnpm add -g @vtsls/language-server eslint_d
+```
+
+Install .NET tool:
+
+```sh
+dotnet tool install -g roslyn-language-server --prerelease
+```
+
+Optional but recommended for C/C++ debugging:
+
+```sh
+sudo pacman -Syy --needed lldb
+```
+
+Optional but recommended for Lua local tooling:
+
+```sh
+luarocks install --local luacheck
+```
+
+### Windows 11
+
+Native Windows packages:
 
 ```powershell
 $packages = @(
@@ -23,6 +52,8 @@ $packages = @(
   "Microsoft.PowerShell"
   "Apache.Maven"
   "LLVM.LLVM"
+  "Kitware.CMake"
+  "Microsoft.DotNet.SDK.8"
   "Zig.Zig"
   "LuaLS.LuaLanguageServer"
   "7zip.7zip"
@@ -33,7 +64,32 @@ foreach ($package in $packages) {
 }
 ```
 
-Install Node with `nvm`:
+Install Node.js and global JS tools:
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS -e
+npm install -g corepack
+corepack enable
+pnpm add -g @vtsls/language-server eslint_d
+```
+
+Install Roslyn language server:
+
+```powershell
+dotnet tool install -g roslyn-language-server --prerelease
+```
+
+Optional but recommended for clipboard integration inside WSL:
+
+```powershell
+winget install --id equalsraf.win32yank -e
+```
+
+### Windows 11 with WSL
+
+If you run Neovim inside WSL, install Linux-side tools there too.
+
+Install Node with `nvm` inside WSL:
 
 > On Windows 11, do this inside WSL.
 
@@ -41,9 +97,12 @@ Install Node with `nvm`:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh | bash
 source "$HOME/.nvm/nvm.sh"
 nvm install --lts
+npm install -g corepack
+corepack enable
+pnpm add -g @vtsls/language-server eslint_d
 ```
 
-Install Java with `sdkman`:
+Install Java with `sdkman` inside WSL:
 
 > `sdkman` is WSL / UNIX only. Use it inside WSL on Windows 11.
 
@@ -53,12 +112,10 @@ source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java
 ```
 
-Then install script-based tools:
+Install Roslyn language server inside WSL if Neovim runs there:
 
 ```sh
-corepack enable
-pnpm add -g typescript-language-server eslint_d
-luarocks install --local luacheck
+dotnet tool install -g roslyn-language-server --prerelease
 ```
 
 Optional but useful:
@@ -85,11 +142,15 @@ Optional but useful:
 - `rafamadriz/friendly-snippets`
 - `mbbill/undotree`
 - `nvim-java/nvim-java`
+- `NStefan002/screenkey.nvim`
+- `seblyng/roslyn.nvim`
 - `xzbdmw/colorful-menu.nvim`
 
 ## LazyVim extras
 
 - `lazyvim.plugins.extras.editor.fzf`
+- `lazyvim.plugins.extras.editor.aerial`
+- `lazyvim.plugins.extras.editor.overseer`
 - `lazyvim.plugins.extras.coding.nvim-cmp`
 - `lazyvim.plugins.extras.editor.refactoring`
 - `lazyvim.plugins.extras.lang.angular`
@@ -102,4 +163,6 @@ Optional but useful:
 - `lazyvim.plugins.extras.lang.json`
 - `lazyvim.plugins.extras.lang.markdown`
 - `lazyvim.plugins.extras.lang.typescript`
+- `lazyvim.plugins.extras.lang.zig`
+- `lazyvim.plugins.extras.test.core`
 - `lazyvim.plugins.extras.lang.yaml`

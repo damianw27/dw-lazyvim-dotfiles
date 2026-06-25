@@ -22,6 +22,7 @@ return {
   },
   {
     "brenton-leighton/multiple-cursors.nvim",
+    lazy = true,
     version = "*", -- Use the latest tagged version
     opts = {}, -- This causes the plugin setup function to be called
     keys = {
@@ -63,6 +64,8 @@ return {
   },
   {
     "dylon/vim-antlr",
+    lazy = true,
+    ft = { "antlr", "g4" },
   },
   {
     "rachartier/tiny-inline-diagnostic.nvim",
@@ -82,7 +85,36 @@ return {
     },
   },
   { "rafamadriz/friendly-snippets" },
-  { "mbbill/undotree" },
+  {
+    "mbbill/undotree",
+    lazy = true,
+    cmd = { "UndotreeToggle", "UndotreeShow" },
+    keys = {
+      { "<leader>uD", "<cmd>UndotreeToggle<cr>", desc = "Toggle Undotree" },
+    },
+  },
+  {
+    "NStefan002/screenkey.nvim",
+    version = "*",
+    lazy = true,
+    cmd = { "Screenkey" },
+    keys = {
+      { "<leader>uK", "<cmd>Screenkey toggle<cr>", desc = "Toggle Screenkey" },
+    },
+    opts = {
+      clear_after = 2,
+      compress_after = 3,
+      disable = {
+        buftypes = { "terminal", "prompt" },
+      },
+      group_mappings = true,
+      notify_method = "echo",
+      win_opts = {
+        width = 36,
+        height = 3,
+      },
+    },
+  },
   {
     "nvim-java/nvim-java",
     ft = { "java" },
@@ -96,6 +128,55 @@ return {
     end,
   },
   { "xzbdmw/colorful-menu.nvim" },
+  {
+    "seblyng/roslyn.nvim",
+    ft = { "cs" },
+    init = function()
+      vim.lsp.config("roslyn", {
+        settings = {
+          ["csharp|background_analysis"] = {
+            dotnet_analyzer_diagnostics_scope = "openFiles",
+            dotnet_compiler_diagnostics_scope = "openFiles",
+          },
+          ["csharp|code_lens"] = {
+            dotnet_enable_references_code_lens = true,
+            dotnet_enable_tests_code_lens = true,
+          },
+          ["csharp|completion"] = {
+            dotnet_show_completion_items_from_unimported_namespaces = true,
+            dotnet_show_name_completion_suggestions = true,
+          },
+          ["csharp|formatting"] = {
+            dotnet_organize_imports_on_format = true,
+          },
+          ["csharp|inlay_hints"] = {
+            csharp_enable_inlay_hints_for_implicit_object_creation = true,
+            csharp_enable_inlay_hints_for_implicit_variable_types = true,
+            csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+            csharp_enable_inlay_hints_for_types = true,
+            dotnet_enable_inlay_hints_for_literal_parameters = true,
+            dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+            dotnet_enable_inlay_hints_for_other_parameters = true,
+            dotnet_enable_inlay_hints_for_parameters = true,
+          },
+        },
+      })
+    end,
+    opts = {
+      broad_search = true,
+      filewatching = "auto",
+      silent = true,
+    },
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        cs = { "csharpier" },
+      },
+    },
+  },
   {
     "saghen/blink.cmp",
     opts = function(_, opts)
@@ -122,7 +203,18 @@ return {
       servers = {
         tsserver = { enabled = false },
         ts_ls = {
+          enabled = false,
           filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+        },
+        vtsls = {
+          settings = {
+            typescript = {
+              preferences = {
+                importModuleSpecifier = "non-relative",
+                importModuleSpecifierEnding = "minimal",
+              },
+            },
+          },
         },
         lua_ls = {
           settings = {
@@ -159,6 +251,87 @@ return {
         },
         zls = {},
       },
+    },
+  },
+  {
+    "mfussenegger/nvim-dap",
+    optional = true,
+    opts = function()
+      local dap = require("dap")
+      if not dap.adapters["netcoredbg"] then
+        dap.adapters["netcoredbg"] = {
+          type = "executable",
+          command = vim.fn.exepath("netcoredbg"),
+          args = { "--interpreter=vscode" },
+          options = {
+            detached = false,
+          },
+        }
+      end
+      if not dap.configurations.cs then
+        dap.configurations.cs = {
+          {
+            type = "netcoredbg",
+            name = "Launch DLL",
+            request = "launch",
+            program = function()
+              return vim.fn.input("Path to dll: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+          },
+        }
+      end
+    end,
+  },
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    dependencies = {
+      "marilari88/neotest-vitest",
+      "nvim-neotest/neotest-jest",
+      "Nsidorenco/neotest-vstest",
+      "lawrence-laz/neotest-zig",
+    },
+    opts = function(_, opts)
+      opts = opts or {}
+      opts.adapters = opts.adapters or {}
+      opts.adapters["neotest-jest"] = opts.adapters["neotest-jest"]
+        or {
+          cwd = function(path)
+            return vim.fs.root(path, { "jest.config.js", "jest.config.ts", "package.json" })
+          end,
+          jestCommand = "npx jest --runInBand",
+        }
+      opts.adapters["neotest-vitest"] = opts.adapters["neotest-vitest"] or {}
+      opts.adapters["neotest-vstest"] = opts.adapters["neotest-vstest"] or {}
+      opts.adapters["neotest-zig"] = opts.adapters["neotest-zig"] or {}
+    end,
+  },
+  {
+    "Civitasv/cmake-tools.nvim",
+    opts = {
+      cmake_compile_commands_options = {
+        action = "soft_link",
+        target = vim.uv.cwd,
+      },
+      cmake_executor = {
+        name = "overseer",
+      },
+      cmake_runner = {
+        name = "overseer",
+      },
+      cmake_regenerate_on_save = true,
+      cmake_use_preset = true,
+      ctest_show_labels = true,
+    },
+    keys = {
+      { "<leader>m", desc = "+cmake" },
+      { "<leader>mg", "<cmd>CMakeGenerate<cr>", desc = "CMake Generate" },
+      { "<leader>mb", "<cmd>CMakeBuild<cr>", desc = "CMake Build" },
+      { "<leader>mr", "<cmd>CMakeRun<cr>", desc = "CMake Run" },
+      { "<leader>md", "<cmd>CMakeDebug<cr>", desc = "CMake Debug" },
+      { "<leader>mt", "<cmd>CMakeRunTest<cr>", desc = "CMake Run Test" },
+      { "<leader>ms", "<cmd>CMakeSettings<cr>", desc = "CMake Settings" },
     },
   },
   {
@@ -209,9 +382,12 @@ return {
 
       local tools = {
         "clangd",
+        "codelldb",
+        "csharpier",
         "eslint-lsp",
         "lua-language-server",
-        "typescript-language-server",
+        "netcoredbg",
+        "vtsls",
         "zls",
       }
 
@@ -235,6 +411,8 @@ return {
       end
 
       local parsers = {
+        "c",
+        "c_sharp",
         "cpp",
         "java",
         "javascript",
